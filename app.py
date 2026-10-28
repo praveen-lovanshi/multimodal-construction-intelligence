@@ -232,8 +232,9 @@ def planning_tab() -> None:
 
 
 def assistant_tab() -> None:
-    st.subheader("Daily Site Assistant & Weather Advisory")
-    weather = st.selectbox("Current weather", ["Normal", "High Wind", "Heavy Rain", "Extreme Heat"])
+    st.subheader("Daily Site Assistant")
+    st.caption("Ask practical construction questions and keep today’s coordination notes in one place.")
+    weather = st.selectbox("Current site condition", ["Normal", "High Wind", "Heavy Rain", "Extreme Heat"])
     activity = st.text_input("Planned activity", placeholder="Example: concrete pour, crane lift, exterior painting")
     advisories = {
         "Normal": ("GO", "Continue with normal controls; verify daily toolbox talk and housekeeping."),
@@ -258,6 +259,29 @@ def assistant_tab() -> None:
         answer = ai.get("answer", "Please verify this situation with the site engineer and safety officer.") if ai else "For a safe response, confirm site conditions, applicable local codes, equipment limits, and the responsible engineer's approval before proceeding."
         st.session_state.messages.append({"role": "assistant", "content": answer})
         st.rerun()
+
+
+def weather_tab() -> None:
+    st.subheader("Weather Advisory")
+    st.caption("Make a clear GO / NO-GO decision before weather-sensitive construction work begins.")
+    c1, c2 = st.columns([1, 1.3])
+    with c1:
+        activity = st.text_input("Planned activity", value="Slab concreting", key="weather_activity")
+        weather = st.selectbox("Current / forecast weather", ["Normal", "High Wind", "Heavy Rain", "Extreme Heat"], key="weather_condition")
+        check = st.button("Check feasibility", type="primary", use_container_width=True)
+    advisories = {
+        "Normal": ("GO", "Proceed with normal controls and a toolbox talk.", ["Verify PPE and access routes", "Confirm equipment inspection", "Maintain housekeeping"]),
+        "High Wind": ("NO-GO FOR EXPOSED LIFTING", "Suspend crane and elevated work when wind exceeds equipment limits.", ["Secure loose materials", "Check tower crane wind limits", "Review work-at-height controls"]),
+        "Heavy Rain": ("NO-GO FOR ELECTRICAL EXPOSURE", "Protect electrical systems and stop work in flooded or slippery areas.", ["Isolate exposed electrical equipment", "Protect fresh concrete and materials", "Inspect access routes before restart"]),
+        "Extreme Heat": ("GO WITH CONTROLS", "Use hydration, shaded rest, heat monitoring, and cooler work periods.", ["Schedule breaks and hydration", "Monitor heat stress symptoms", "Shift heavy work to cooler hours"]),
+    }
+    decision, advice, risks = advisories[weather]
+    with c2:
+        items = "".join(f"<div class='advisory-item'>✓ {risk}</div>" for risk in risks)
+        tone = "good" if weather == "Normal" else "caution"
+        st.markdown(f"<div class='advisory-card {tone}'><div class='advisory-kicker'>WEATHER DECISION</div><h2>{decision}</h2><p>{advice}</p><div class='advisory-label'>REQUIRED PRECAUTIONS</div>{items}</div>", unsafe_allow_html=True)
+    if check:
+        st.success(f"Advisory generated for **{activity}** under **{weather}** conditions.")
 
 
 def main() -> None:
@@ -295,6 +319,11 @@ def main() -> None:
     .module-card { min-height:170px; padding:1.15rem; margin-bottom:1rem; position:relative; }
     .module-card h3 { margin:.7rem 0 .35rem; } .module-card p { font-size:.82rem; min-height:42px; }
     .module-icon { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#29334b; font-size:1.1rem; }
+    .advisory-card { background:linear-gradient(145deg,var(--panel),#0e1729); border:1px solid #25324b; border-left:3px solid var(--orange); border-radius:12px; padding:1.4rem; min-height:220px; }
+    .advisory-card.good { border-left-color:var(--green); } .advisory-card.caution { border-left-color:var(--orange); }
+    .advisory-kicker, .advisory-label { color:var(--muted); font-size:.7rem; font-weight:700; letter-spacing:.08em; }
+    .advisory-card h2 { color:var(--orange) !important; margin:.6rem 0; } .advisory-card.good h2 { color:var(--green) !important; }
+    .advisory-item { background:#0b1323; border-radius:6px; padding:.5rem; margin-top:.45rem; color:#c9d2e2; font-size:.8rem; }
     .module-tag { position:absolute; top:1rem; right:1rem; font-size:.62rem; padding:.28rem .45rem; border-radius:5px; background:#4a3818; color:var(--orange); }
     .module-tag.red { background:#421b2b; color:#ff5472; } .module-tag.green { background:#083a35; color:var(--green); } .module-tag.blue { background:#08364b; color:var(--blue); }
     .launch { color:var(--orange); font-size:.76rem; font-weight:700; } .launch.green { color:var(--green); } .launch.blue { color:var(--blue); } .launch.red { color:var(--red); }
@@ -302,7 +331,9 @@ def main() -> None:
     .stButton > button:hover { background:#ffc04a; color:#111; }
     [data-testid='stMetric'] { background:var(--panel); border:1px solid #25324b; border-radius:10px; }
     [data-baseweb='tab-list'] { gap: .35rem; } [data-baseweb='tab'] { color:var(--muted); } [aria-selected='true'] { color:var(--orange) !important; }
-    [data-testid='stFileUploaderDropzone'], [data-testid='stChatInput'] { background:var(--panel); border:1px dashed #3b4964; }
+    [data-testid='stFileUploaderDropzone'], [data-testid='stChatInput'], [data-testid='stChatInput'] > div { background:var(--panel) !important; border:1px dashed #3b4964 !important; }
+    [data-testid='stChatInput'] textarea, input, textarea, [data-baseweb='select'] > div { background:#111a2d !important; color:#edf2fb !important; border-color:#3b4964 !important; }
+    [data-testid='stHeader'], [data-testid='stToolbar'], header { background:transparent !important; }
     </style>
     """, unsafe_allow_html=True)
     with st.sidebar:
@@ -323,7 +354,7 @@ def main() -> None:
     elif page == "Valuation Studio": planning_tab()
     elif page == "WBS & Planning": planning_tab()
     elif page == "Daily Site Log": assistant_tab()
-    else: assistant_tab()
+    else: weather_tab()
 
 
 if __name__ == "__main__":
