@@ -103,9 +103,44 @@ def demo_crack() -> dict[str, Any]:
 
 
 def show_header() -> None:
-    st.title(APP_TITLE)
-    st.caption("AI-assisted construction planning, safety, diagnostics, and site coordination")
-    st.info("Decision-support only: verify safety, structural, cost, and code decisions with qualified professionals.")
+    st.markdown("<div class='eyebrow'>MULTIMODAL CONSTRUCTION INTELLIGENCE <span>V2.0 · STUDENT EDITION</span></div>", unsafe_allow_html=True)
+    st.title("Construction Decision Support Dashboard")
+    st.caption("Multimodal AI for site safety, structural health, planning, valuation, and daily coordination")
+    st.warning("Decision-support only: verify safety, structural, cost, and code decisions with qualified professionals.")
+
+
+def metric_card(label: str, value: str, detail: str, tone: str = "orange") -> None:
+    st.markdown(
+        f"<div class='metric-card {tone}'><div class='metric-label'>{label}</div><div class='metric-value'>{value}</div><div class='metric-detail'>{detail}</div></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def module_card(icon: str, title: str, description: str, tag: str, tone: str = "orange") -> None:
+    st.markdown(
+        f"<div class='module-card'><div class='module-icon {tone}'>{icon}</div><div class='module-tag {tone}'>{tag}</div><h3>{title}</h3><p>{description}</p><div class='launch {tone}'>Open workspace →</div></div>",
+        unsafe_allow_html=True,
+    )
+
+
+def overview_tab() -> None:
+    st.markdown("<div class='hero-row'><div><h2>Project overview</h2><p>One workspace for construction intelligence and field decisions.</p></div><div class='api-pill'>● DEMO MODE</div></div>", unsafe_allow_html=True)
+    st.button("Generate full site audit", type="primary", use_container_width=False)
+    c1, c2, c3, c4 = st.columns(4)
+    with c1: metric_card("SITE SAFETY SCORE", "82/100", "Needs attention · PPE audit", "orange")
+    with c2: metric_card("ACTIVE DEFECT SEVERITY", "Minor", "Hairline · Review advised", "red")
+    with c3: metric_card("PROJECT BUDGET", "₹25.2 L", "Indicative · 25% complete", "green")
+    with c4: metric_card("SCHEDULE TIMELINE", "12 weeks", "Milestone plan · On track", "blue")
+    st.markdown("<div class='alert-card'><b>⚠ HIGH PRIORITY SITE CHECK</b><br><span>Review PPE compliance, access routes, and weather conditions before beginning elevated or lifting work.</span></div>", unsafe_allow_html=True)
+    st.subheader("Intelligence modules")
+    c1, c2, c3 = st.columns(3)
+    with c1: module_card("🛡", "Site safety monitoring", "PPE checks, hazard severity, and corrective actions from construction photos.", "82% DEMO SCORE", "orange")
+    with c2: module_card("⌁", "Crack diagnostics", "Defect classification, estimated width, causes, urgency, and repair guidance.", "MINOR DEFECT", "red")
+    with c3: module_card("₹", "Valuation studio", "Budget, capex, material quantities, and indicative Indian market valuation.", "INR READY", "green")
+    c1, c2, c3 = st.columns(3)
+    with c1: module_card("▦", "WBS & planning", "Construction phases, quantities, milestones, and completion progress.", "12-WEEK PLAN", "blue")
+    with c2: module_card("☁", "Weather advisory", "GO / NO-GO guidance for rain, wind, heat, and weather-sensitive activities.", "RISK AWARE", "orange")
+    with c3: module_card("▣", "Knowledge assistant", "Ask concise construction questions and receive practical site guidance.", "READY", "green")
 
 
 def safety_tab() -> None:
@@ -227,20 +262,68 @@ def assistant_tab() -> None:
 
 def main() -> None:
     st.set_page_config(page_title=APP_TITLE, page_icon="🏗️", layout="wide")
-    st.markdown("""<style>.stApp {background: #f7f8fa;} .block-container {max-width: 1200px; padding-top: 2rem;} [data-testid='stMetric'] {background: white; padding: 1rem; border-radius: .75rem; box-shadow: 0 1px 5px #0001;}</style>""", unsafe_allow_html=True)
+    st.markdown("""
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+    :root { --bg:#070b14; --panel:#111a2d; --panel2:#172238; --text:#edf2fb; --muted:#8d9ab0; --orange:#ff9d00; --red:#ff4264; --green:#00c894; --blue:#25b9e8; }
+    .stApp { background: radial-gradient(circle at 80% 0%, #18243a 0, var(--bg) 38%); color:var(--text); }
+    .block-container { max-width: 1450px; padding: 2rem 3rem 4rem; }
+    html, body, [class*='css'] { font-family:'DM Sans', sans-serif; }
+    h1,h2,h3 { font-family:'Space Grotesk', sans-serif !important; color:var(--text) !important; }
+    h1 { font-size:2.1rem !important; margin-bottom:.2rem !important; }
+    h2 { font-size:1.35rem !important; }
+    h3 { font-size:1rem !important; }
+    p, .stCaption { color:var(--muted) !important; }
+    [data-testid='stSidebar'] { background:#090e18; border-right:1px solid #202b40; }
+    [data-testid='stSidebar'] h1 { color:var(--orange) !important; }
+    [data-testid='stSidebar'] .stRadio label { color:#c5cfdf !important; padding:.35rem 0; }
+    [data-testid='stSidebar'] .stRadio label:hover { color:var(--orange) !important; }
+    .eyebrow { color:var(--orange); font-size:.72rem; letter-spacing:.14em; font-weight:700; margin-bottom:1rem; }
+    .eyebrow span { color:var(--muted); margin-left:1rem; letter-spacing:.05em; }
+    .hero-row { display:flex; justify-content:space-between; align-items:center; margin:1rem 0; }
+    .hero-row h2 { margin-bottom:0; }
+    .hero-row p { margin-top:.25rem; }
+    .api-pill { border:1px solid #006f5a; color:var(--green); background:#052b28; border-radius:999px; padding:.55rem .9rem; font-size:.75rem; font-weight:700; }
+    .metric-card, .module-card, .alert-card { background:linear-gradient(145deg,var(--panel),#0e1729); border:1px solid #25324b; border-radius:12px; box-shadow:0 8px 25px #0002; }
+    .metric-card { min-height:120px; padding:1rem; border-left:3px solid var(--orange); margin-bottom:1rem; }
+    .metric-card.red { border-left-color:var(--red); } .metric-card.green { border-left-color:var(--green); } .metric-card.blue { border-left-color:var(--blue); }
+    .metric-label { color:var(--muted); font-size:.7rem; font-weight:700; letter-spacing:.08em; }
+    .metric-value { font-family:'Space Grotesk'; font-size:1.75rem; font-weight:700; margin:.55rem 0 .25rem; }
+    .metric-detail { color:var(--muted); font-size:.75rem; }
+    .alert-card { border-color:#7d243b; background:#281321; padding:1rem 1.2rem; margin:1rem 0 2rem; color:#ff5572; }
+    .alert-card span { color:#c7a9b2; font-size:.8rem; }
+    .module-card { min-height:170px; padding:1.15rem; margin-bottom:1rem; position:relative; }
+    .module-card h3 { margin:.7rem 0 .35rem; } .module-card p { font-size:.82rem; min-height:42px; }
+    .module-icon { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border-radius:8px; background:#29334b; font-size:1.1rem; }
+    .module-tag { position:absolute; top:1rem; right:1rem; font-size:.62rem; padding:.28rem .45rem; border-radius:5px; background:#4a3818; color:var(--orange); }
+    .module-tag.red { background:#421b2b; color:#ff5472; } .module-tag.green { background:#083a35; color:var(--green); } .module-tag.blue { background:#08364b; color:var(--blue); }
+    .launch { color:var(--orange); font-size:.76rem; font-weight:700; } .launch.green { color:var(--green); } .launch.blue { color:var(--blue); } .launch.red { color:var(--red); }
+    .stButton > button { background:linear-gradient(135deg,#ffb000,#f07e00); color:#111; border:0; font-weight:700; border-radius:8px; }
+    .stButton > button:hover { background:#ffc04a; color:#111; }
+    [data-testid='stMetric'] { background:var(--panel); border:1px solid #25324b; border-radius:10px; }
+    [data-baseweb='tab-list'] { gap: .35rem; } [data-baseweb='tab'] { color:var(--muted); } [aria-selected='true'] { color:var(--orange) !important; }
+    [data-testid='stFileUploaderDropzone'], [data-testid='stChatInput'] { background:var(--panel); border:1px dashed #3b4964; }
+    </style>
+    """, unsafe_allow_html=True)
     with st.sidebar:
-        st.header("🏗️ Platform controls")
+        st.markdown("# 🏗️\n**CONSTRUCT**<span style='color:#ff9d00'>AI</span>", unsafe_allow_html=True)
+        st.caption("Full-stack construction decision support")
+        st.divider()
         st.text_input("Gemini API key", type="password", key="gemini_api_key", help="Optional. Leave blank for demonstration mode.")
         st.caption("A configured Streamlit secret or GEMINI_API_KEY environment variable takes priority. Keys are not stored by this app.")
         st.divider()
-        st.markdown("**Architecture**\n\nStreamlit UI → feature modules → optional Gemini multimodal layer → validated JSON → downloadable reports")
-        st.markdown("**Deployment**\n\nWorks locally and on Streamlit Community Cloud with no database.")
+        st.markdown("**SYSTEM STATUS**")
+        st.success("● Demo system online")
+        st.caption("v1.0 · Student certification build")
     show_header()
-    tabs = st.tabs(["Safety & PPE", "Crack Diagnostics", "Planning & Valuation", "Daily Assistant"])
-    with tabs[0]: safety_tab()
-    with tabs[1]: crack_tab()
-    with tabs[2]: planning_tab()
-    with tabs[3]: assistant_tab()
+    page = st.radio("Navigation", ["Overview", "Site Safety (PPE)", "Crack Analysis", "Valuation Studio", "WBS & Planning", "Daily Site Log", "Weather Advisory"], horizontal=True, label_visibility="collapsed")
+    if page == "Overview": overview_tab()
+    elif page == "Site Safety (PPE)": safety_tab()
+    elif page == "Crack Analysis": crack_tab()
+    elif page == "Valuation Studio": planning_tab()
+    elif page == "WBS & Planning": planning_tab()
+    elif page == "Daily Site Log": assistant_tab()
+    else: assistant_tab()
 
 
 if __name__ == "__main__":
