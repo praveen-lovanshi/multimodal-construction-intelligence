@@ -1,0 +1,9 @@
+[theme]
+primaryColor = "#1463ff"
+base = "light"
+font = "sans serif"
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
